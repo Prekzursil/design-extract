@@ -1,0 +1,6 @@
+interface:
+  display_name: "Design Extract"
+  short_description: "Repo-specific patterns and workflows for design-extract"
+  default_prompt: "Use the design-extract repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
