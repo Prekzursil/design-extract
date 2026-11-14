@@ -15,4 +15,4 @@ startCommand:
     })
 
 build:
-  dockerfile: smithery.dockerfile
+  dockerfile: Dockerfile.smithery
