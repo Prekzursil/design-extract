@@ -61,9 +61,12 @@ runs:
       shell: bash
       env:
         BASELINE: ${{ inputs.baseline }}
+        # Pass action_path via env instead of interpolating the expression
+        # into the run script (actions/code-injection finding).
+        ACTION_PATH: ${{ github.action_path }}
       run: |
         NEW=$(ls .designlang-run/*-design-tokens.json | head -n 1)
-        node "${{ github.action_path }}/diff-tokens.cjs" "$BASELINE" "$NEW" > .designlang-run/diff.md || true
+        node "$ACTION_PATH/diff-tokens.cjs" "$BASELINE" "$NEW" > .designlang-run/diff.md || true
         CHANGED=$(grep -c '^- ' .designlang-run/diff.md || echo 0)
         echo "changed=$([ "$CHANGED" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
         echo "changed-count=$CHANGED" >> "$GITHUB_OUTPUT"
