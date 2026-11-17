@@ -19,7 +19,7 @@ function looksLikeDotGrid(image) {
 
 function looksLikeLineGrid(image) {
   // repeating-linear-gradient with a narrow colored band.
-  return /repeating-linear-gradient/i.test(image);
+  return image.toLowerCase().includes('repeating-linear-gradient');
 }
 
 function looksLikeNoise(image) {
