@@ -8,7 +8,11 @@
 // already has access to, plus the `modernColors` and any collected svgs.
 
 function looksLikeDotGrid(image) {
-  return /radial-gradient\(.*\)/i.test(image) && /repeat/i.test(image) && /(\d+px\s*\d+px)/.test(image);
+  return (
+    /radial-gradient\([^)]*\)/i.test(image) &&
+    /repeat/i.test(image) &&
+    /(\d+px\s+\d+px)/.test(image)
+  );
 }
 
 function looksLikeLineGrid(image) {
@@ -18,7 +22,11 @@ function looksLikeLineGrid(image) {
 
 function looksLikeNoise(image) {
   // data URI SVG with feTurbulence filter, or a well-known noise png path.
-  return /feTurbulence|data:image\/svg.+fractalNoise/i.test(image) || /noise\.(png|svg|webp)/i.test(image);
+  return (
+    /feTurbulence/i.test(image) ||
+    (image.includes('data:image/svg') && image.includes('fractalNoise')) ||
+    /noise\.(png|svg|webp)/i.test(image)
+  );
 }
 
 function countRadialGradients(image) {

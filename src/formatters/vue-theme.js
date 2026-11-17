@@ -1,7 +1,7 @@
-import { rgbToHsl } from '../utils.js';
+
 
 export function formatVueTheme(design) {
-  const { colors, typography, spacing, borders, shadows } = design;
+  const { colors, typography, spacing, borders } = design;
   const lines = [];
 
   lines.push('// Vuetify 3 theme configuration');

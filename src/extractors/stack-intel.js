@@ -7,50 +7,54 @@
 // Split, Eppo). All signals come from script URLs + meta + known globals.
 
 const CMS = [
-  { id: 'webflow', re: /webflow\.com|wf-|\.webflow\./i },
-  { id: 'framer', re: /framer\.(?:com|website)|__framer|framer-motion\b/i },
-  { id: 'shopify', re: /cdn\.shopify|shopify\.com|x-shopify/i },
-  { id: 'ghost', re: /ghost\.io|__ghost_|ghost-url/i },
-  { id: 'sanity', re: /cdn\.sanity\.io|sanity-studio/i },
-  { id: 'contentful', re: /cdn\.contentful\.com|ctfassets\.net/i },
-  { id: 'wix', re: /parastorage\.com|\.wix\.com/i },
-  { id: 'squarespace', re: /squarespace\.com|sqspcdn\.com|squarespace-cdn/i },
-  { id: 'wordpress', re: /wp-content|wp-includes|wordpress/i },
-  { id: 'hashnode', re: /hashnode\.com/i },
-  { id: 'notion', re: /notion\.so\/image|notion-static/i },
-  { id: 'bubble', re: /bubble\.io|bubble-cdn/i },
+  { id: 'webflow', needles: ['webflow.com', 'wf-', '.webflow.'] },
+  { id: 'framer', needles: ['framer.com', 'framer.website', '__framer', 'framer-motion'] },
+  { id: 'shopify', needles: ['cdn.shopify', 'shopify.com', 'x-shopify'] },
+  { id: 'ghost', needles: ['ghost.io', '__ghost_', 'ghost-url'] },
+  { id: 'sanity', needles: ['cdn.sanity.io', 'sanity-studio'] },
+  { id: 'contentful', needles: ['cdn.contentful.com', 'ctfassets.net'] },
+  { id: 'wix', needles: ['parastorage.com', '.wix.com'] },
+  { id: 'squarespace', needles: ['squarespace.com', 'sqspcdn.com', 'squarespace-cdn'] },
+  { id: 'wordpress', needles: ['wp-content', 'wp-includes', 'wordpress'] },
+  { id: 'hashnode', needles: ['hashnode.com'] },
+  { id: 'notion', needles: ['notion.so/image', 'notion-static'] },
+  { id: 'bubble', needles: ['bubble.io', 'bubble-cdn'] },
 ];
 
 const ANALYTICS = [
-  { id: 'google-analytics', re: /google-analytics\.com|googletagmanager\.com|gtag\(/ },
-  { id: 'segment', re: /segment\.com\/analytics|cdn\.segment\.io/i },
-  { id: 'mixpanel', re: /cdn\.mxpnl\.com|mixpanel\.com\/lib/i },
-  { id: 'amplitude', re: /amplitude\.com|cdn\.amplitude\.com/i },
-  { id: 'posthog', re: /posthog\.com|ph\.posthog\.com/i },
-  { id: 'heap', re: /heapanalytics\.com/i },
-  { id: 'fullstory', re: /fullstory\.com/i },
-  { id: 'hotjar', re: /static\.hotjar\.com|hj\.contentsquare/i },
-  { id: 'vercel-analytics', re: /_vercel\/insights|vercel\/analytics/i },
-  { id: 'plausible', re: /plausible\.io\/js|plausible\.io\/api/i },
-  { id: 'fathom', re: /usefathom\.com/i },
-  { id: 'sentry', re: /sentry\.io|sentry-cdn/i },
-  { id: 'datadog', re: /datadoghq\.com|datadog-rum/i },
+  { id: 'google-analytics', needles: ['google-analytics.com', 'googletagmanager.com', 'gtag('] },
+  { id: 'segment', needles: ['segment.com/analytics', 'cdn.segment.io'] },
+  { id: 'mixpanel', needles: ['cdn.mxpnl.com', 'mixpanel.com/lib'] },
+  { id: 'amplitude', needles: ['amplitude.com', 'cdn.amplitude.com'] },
+  { id: 'posthog', needles: ['posthog.com', 'ph.posthog.com'] },
+  { id: 'heap', needles: ['heapanalytics.com'] },
+  { id: 'fullstory', needles: ['fullstory.com'] },
+  { id: 'hotjar', needles: ['static.hotjar.com', 'hj.contentsquare'] },
+  { id: 'vercel-analytics', needles: ['_vercel/insights', 'vercel/analytics'] },
+  { id: 'plausible', needles: ['plausible.io/js', 'plausible.io/api'] },
+  { id: 'fathom', needles: ['usefathom.com'] },
+  { id: 'sentry', needles: ['sentry.io', 'sentry-cdn'] },
+  { id: 'datadog', needles: ['datadoghq.com', 'datadog-rum'] },
 ];
 
 const EXPERIMENTATION = [
-  { id: 'optimizely', re: /optimizely\.com|cdn\.optimizely\./i },
-  { id: 'statsig', re: /statsig\.com/i },
-  { id: 'growthbook', re: /growthbook\.io/i },
-  { id: 'launchdarkly', re: /launchdarkly\.com/i },
-  { id: 'split', re: /split\.io|sdk\.split\.io/i },
-  { id: 'eppo', re: /eppo\.cloud/i },
-  { id: 'vercel-flags', re: /vercel\/flags|flags\.sdk/i },
+  { id: 'optimizely', needles: ['optimizely.com', 'cdn.optimizely.'] },
+  { id: 'statsig', needles: ['statsig.com'] },
+  { id: 'growthbook', needles: ['growthbook.io'] },
+  { id: 'launchdarkly', needles: ['launchdarkly.com'] },
+  { id: 'split', needles: ['split.io', 'sdk.split.io'] },
+  { id: 'eppo', needles: ['eppo.cloud'] },
+  { id: 'vercel-flags', needles: ['vercel/flags', 'flags.sdk'] },
 ];
 
-function fingerprint(haystack, list) {
+function fingerprint(haystackLower, list) {
   const hits = [];
   for (const entry of list) {
-    if (entry.re.test(haystack)) hits.push(entry.id);
+    // Literal substring matching (case-insensitive): these detectors grep
+    // script URLs and page content for known stack signatures on purpose -
+    // anchoring or regex evaluation would defeat the detection. Matching on
+    // literals keeps the semantics and cannot ReDoS or mis-anchor.
+    if (entry.needles.some(n => haystackLower.includes(n))) hits.push(entry.id);
   }
   return hits;
 }
@@ -59,7 +63,7 @@ export function extractStackIntel(stack = {}) {
   const scripts = (stack.scripts || []).join(' \n');
   const metas = (stack.metas || []).map(m => `${m.name || ''} ${m.content || ''}`).join(' ');
   const classes = (stack.classNameSample || []).join(' ');
-  const haystack = `${scripts}\n${metas}\n${classes}`;
+  const haystack = `${scripts}\n${metas}\n${classes}`.toLowerCase(); // Lowercased once: every detector needle is lowercase
 
   return {
     cms: fingerprint(haystack, CMS),

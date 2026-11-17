@@ -29,7 +29,6 @@ export async function captureResponsive(url, options = {}) {
         const body = document.body;
         const cs = getComputedStyle(body);
         const html = document.documentElement;
-        const htmlCs = getComputedStyle(html);
 
         // Collect key metrics at this viewport
         const headings = {};

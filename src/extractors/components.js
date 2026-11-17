@@ -17,11 +17,14 @@ export function extractComponents(computedStyles) {
     const variants = [...bgGroups.entries()]
       .sort((a, b) => b[1].length - a[1].length)
       .map(([bg, group], i) => {
-        let variant = 'default';
-        if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') variant = 'ghost';
-        else if (i === 0) variant = 'primary';
-        else if (i === 1) variant = 'secondary';
-        else variant = `variant-${i + 1}`;
+        const variant =
+          bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent'
+            ? 'ghost'
+            : i === 0
+              ? 'primary'
+              : i === 1
+                ? 'secondary'
+                : `variant-${i + 1}`;
         return { variant, backgroundColor: bg, count: group.length, style: mostCommonStyle(group, ['color', 'fontSize', 'fontWeight', 'paddingTop', 'paddingRight', 'borderRadius']) };
       });
     components.buttons = {

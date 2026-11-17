@@ -5,11 +5,30 @@ import { formatTokens } from './formatters/tokens.js';
 import { formatTailwind } from './formatters/tailwind.js';
 import { formatCssVars } from './formatters/css-vars.js';
 import { saveSnapshot, getHistory } from './history.js';
-import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { writeFileSync, openSync, writeSync, ftruncateSync, closeSync, existsSync } from 'fs';
 import { join } from 'path';
 
+
+// Rewrite a file ONLY if it already exists, without a check-then-write race:
+// opening with 'r+' fails atomically with ENOENT when the file is absent.
+function updateIfPresent(path, content) {
+  let fd;
+  try {
+    fd = openSync(path, 'r+');
+  } catch {
+    return false;
+  }
+  try {
+    ftruncateSync(fd, 0);
+    writeSync(fd, content, 0, 'utf-8');
+    return true;
+  } finally {
+    closeSync(fd);
+  }
+}
+
 export async function syncDesign(url, options = {}) {
-  const { out = '.', interval = 3600000 } = options; // default 1 hour
+  const { out = '.' } = options;
 
   const current = await extractDesignLanguage(url, options);
   const history = getHistory(url);
@@ -43,20 +62,17 @@ export async function syncDesign(url, options = {}) {
   const updates = [];
 
   const tokensPath = join(out, 'design-tokens.json');
-  if (existsSync(tokensPath)) {
-    writeFileSync(tokensPath, formatTokens(current), 'utf-8');
+  if (updateIfPresent(tokensPath, formatTokens(current))) {
     updates.push('design-tokens.json');
   }
 
   const tailwindPath = join(out, 'tailwind.config.js');
-  if (existsSync(tailwindPath)) {
-    writeFileSync(tailwindPath, formatTailwind(current), 'utf-8');
+  if (updateIfPresent(tailwindPath, formatTailwind(current))) {
     updates.push('tailwind.config.js');
   }
 
   const cssPath = join(out, 'variables.css');
-  if (existsSync(cssPath)) {
-    writeFileSync(cssPath, formatCssVars(current), 'utf-8');
+  if (updateIfPresent(cssPath, formatCssVars(current))) {
     updates.push('variables.css');
   }
 

@@ -95,15 +95,16 @@ export function extractMotion(computedStyles, keyframes = []) {
     if (el.transition && el.transition !== 'all 0s ease 0s' && el.transition !== 'none') {
       transitions.add(el.transition);
       isAnimating = true;
-      for (const m of el.transition.matchAll(/(?<![(\d])(\d+\.?\d*m?s)(?![)\w])/g)) durations.push(MS(m[1]));
-      for (const m of el.transition.matchAll(/(ease|ease-in|ease-out|ease-in-out|linear|cubic-bezier\([^)]+\)|steps\([^)]+\))/g)) easingRaw.add(m[1]);
+      for (const m of el.transition.matchAll(/(?<![(\d])(\d+(?:\.\d+)?m?s)(?![)\w])/g)) durations.push(MS(m[1]));
+      for (const m of el.transition.matchAll(/(ease-in-out|ease-in|ease-out|ease|linear|cubic-bezier\([-0-9., ]+\)|steps\([\d, ]+\))/g)) easingRaw.add(m[1]);
       for (const part of el.transition.split(',')) {
         const prop = part.trim().split(/\s+/)[0];
         if (prop && prop !== 'all') transitionedProps[prop] = (transitionedProps[prop] || 0) + 1;
       }
     }
     if (el.animation && el.animation !== 'none 0s ease 0s 1 normal none running' && el.animation !== 'none') {
-      const nameMatch = el.animation.match(/([a-zA-Z_][\w-]*)\s*$/) || el.animation.match(/^([a-zA-Z_][\w-]*)/);
+      const trimmedAnimation = el.animation.trim();
+      const nameMatch = trimmedAnimation.match(/([a-zA-Z_][\w-]*)$/) || trimmedAnimation.match(/^([a-zA-Z_][\w-]*)/);
       if (nameMatch) {
         const name = nameMatch[1];
         if (name !== 'none' && name !== 'running' && name !== 'paused') {

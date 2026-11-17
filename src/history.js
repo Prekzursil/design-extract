@@ -65,7 +65,8 @@ export function getHistory(url) {
   ensureDir();
   const hostname = new URL(url).hostname.replace(/^www\./, '');
   const file = historyFile(hostname);
-  if (!existsSync(file)) return [];
+  // No existsSync guard: the file can disappear between check and read
+  // (TOCTOU). ENOENT and a corrupt file are both 'no history'.
   try { return JSON.parse(readFileSync(file, 'utf-8')); } catch { return []; }
 }
 
