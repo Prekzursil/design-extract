@@ -68,7 +68,7 @@ body {
 
   // Layout
   writeFileSync(join(projectDir, 'src/app/layout.js'), `export const metadata = {
-  title: '${(design.meta.title || 'Cloned Design').replace(/\\/g, '\\\\').replace(/'/g, "\'")}',
+  title: '${(design.meta.title || 'Cloned Design').replace(/\\/g, '\\\\').replace(/'/g, "\\'")}',
   description: 'Design cloned from ${design.meta.url}',
 };
 

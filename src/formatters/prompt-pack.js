@@ -139,7 +139,7 @@ export function formatCursorPrompt(design) {
     `  colors: [${b.colors.map(c => `'${c}'`).join(', ')}],`,
     `  fonts: [${b.fonts.map(f => `'${f}'`).join(', ')}],`,
     `  radii: [${(design.borders?.radii || []).slice(0, 6).map(r => `'${(r.value || r)}'`).join(', ')}],`,
-    `  shadows: [${(design.shadows?.values || []).slice(0, 3).map(s => `'${String(s.value ?? s).replace(/\\/g, '\\\\').replace(/'/g, "\'")}'`).join(', ')}],`,
+    `  shadows: [${(design.shadows?.values || []).slice(0, 3).map(s => `'${String(s.value ?? s).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`).join(', ')}],`,
     '};',
     '```',
     '',

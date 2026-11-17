@@ -5,7 +5,7 @@ import { formatTokens } from './formatters/tokens.js';
 import { formatTailwind } from './formatters/tailwind.js';
 import { formatCssVars } from './formatters/css-vars.js';
 import { saveSnapshot, getHistory } from './history.js';
-import { writeFileSync, openSync, writeSync, ftruncateSync, closeSync, existsSync } from 'fs';
+import { openSync, writeSync, ftruncateSync, closeSync } from 'fs';
 import { join } from 'path';
 
 

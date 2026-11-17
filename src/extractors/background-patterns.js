@@ -8,11 +8,13 @@
 // already has access to, plus the `modernColors` and any collected svgs.
 
 function looksLikeDotGrid(image) {
-  return (
-    /radial-gradient\([^)]*\)/i.test(image) &&
-    /repeat/i.test(image) &&
-    /(\d+px\s+\d+px)/.test(image)
+  // Two consecutive "<n>px" tokens, checked per token with single-quantifier
+  // anchored regexes instead of one multi-quantifier pattern (js/polynomial-redos).
+  const tokens = image.split(/\s+/);
+  const sizePair = tokens.some(
+    (t, i) => i > 0 && /^\d+px$/.test(t) && /^\d+px$/.test(tokens[i - 1]),
   );
+  return /radial-gradient\([^)]*\)/i.test(image) && /repeat/i.test(image) && sizePair;
 }
 
 function looksLikeLineGrid(image) {

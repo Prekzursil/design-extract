@@ -734,6 +734,7 @@ export function formatMarkdown(design) {
     lines.push('|---|------|---------|------------|');
     for (const s of design.sectionRoles.sections.slice(0, 20)) {
       const h = (s.heading || '')
+        .replace(/\\/g, '\\\\')    // a backslash must not escape the next char
         .replace(/[\r\n]+/g, ' ')  // a newline would break the table row
         .replace(/\|/g, '\\|')
         .slice(0, 80);

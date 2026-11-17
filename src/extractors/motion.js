@@ -104,9 +104,15 @@ export function extractMotion(computedStyles, keyframes = []) {
     }
     if (el.animation && el.animation !== 'none 0s ease 0s 1 normal none running' && el.animation !== 'none') {
       const trimmedAnimation = el.animation.trim();
-      const nameMatch = trimmedAnimation.match(/([a-zA-Z_][\w-]*)$/) || trimmedAnimation.match(/^([a-zA-Z_][\w-]*)/);
-      if (nameMatch) {
-        const name = nameMatch[1];
+      // Identifier extraction via whitespace/comma split + fully anchored
+      // single-quantifier test (js/polynomial-redos).
+      const animTokens = trimmedAnimation.split(/[\s,]+/);
+      const lastTok = animTokens[animTokens.length - 1] ?? '';
+      const firstTok = animTokens[0] ?? '';
+      const lastName = /^[a-zA-Z_][\w-]*$/.test(lastTok) ? lastTok : null;
+      const firstName = /^[a-zA-Z_][\w-]*$/.test(firstTok) ? firstTok : null;
+      const name = lastName ?? firstName;
+      if (name) {
         if (name !== 'none' && name !== 'running' && name !== 'paused') {
           animationRefs.set(name, (animationRefs.get(name) || 0) + 1);
         }
