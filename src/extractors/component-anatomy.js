@@ -1,8 +1,6 @@
 // Component Anatomy v2 — builds per-kind anatomy trees, variant × state matrices,
 // and typed prop surfaces that downstream generators can turn into stubs.
 
-const KNOWN_VARIANTS = ['primary', 'secondary', 'tertiary', 'ghost', 'outline', 'solid', 'destructive', 'danger', 'success', 'warning', 'link', 'subtle'];
-const KNOWN_SIZES = ['xs', 'sm', 'md', 'lg', 'xl', 'small', 'medium', 'large'];
 
 function slotFingerprint(slots = []) {
   return slots.map(s => s.role).join('>');

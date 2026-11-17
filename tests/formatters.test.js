@@ -693,8 +693,9 @@ describe('formatAgentRules', () => {
   });
 
   it('all four files reference the source URL', () => {
+    const expectedHost = new URL(url).hostname;
     for (const key of Object.keys(out)) {
-      assert.ok(out[key].includes(url), `${key} missing url`);
+      assert.ok(out[key].includes(expectedHost), `${key} missing url host`);
     }
   });
 

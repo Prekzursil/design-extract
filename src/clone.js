@@ -68,7 +68,7 @@ body {
 
   // Layout
   writeFileSync(join(projectDir, 'src/app/layout.js'), `export const metadata = {
-  title: '${(design.meta.title || 'Cloned Design').replace(/'/g, "\\'")}',
+  title: '${(design.meta.title || 'Cloned Design').replace(/\\/g, '\\\\').replace(/'/g, "\\'")}',
   description: 'Design cloned from ${design.meta.url}',
 };
 
@@ -89,7 +89,6 @@ export default function RootLayout({ children }) {
   // Demo page showcasing the design system
   const headingScale = typography.headings.slice(0, 3);
   const bodySize = typography.body?.size || 16;
-  const spacingVals = spacing.scale.slice(0, 8);
 
   writeFileSync(join(projectDir, 'src/app/page.js'), `import './globals.css';
 

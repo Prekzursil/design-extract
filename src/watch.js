@@ -4,7 +4,6 @@ import { extractDesignLanguage } from './index.js';
 import { saveSnapshot, getHistory } from './history.js';
 
 export async function watchSite(url, options = {}) {
-  const { intervalMs = 3600000 } = options; // default 1 hour
 
   const design = await extractDesignLanguage(url);
   const history = getHistory(url);

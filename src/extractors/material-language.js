@@ -55,7 +55,7 @@ function shadowComplexity(shadowValues) {
     if (/inset/i.test(raw)) insetCount++;
     // Blur is the third length in `offset-x offset-y blur [spread] color`. The
     // `px` unit is common but optional — `0 0` is a valid zero-blur shadow.
-    const blurs = [...raw.matchAll(/(-?\d+(?:\.\d+)?)(?:px)?\s+(-?\d+(?:\.\d+)?)(?:px)?\s+(\d+(?:\.\d+)?)(?:px)?/g)];
+    const blurs = [...raw.replace(/px/g, ' ').matchAll(/(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)/g)];
     for (const m of blurs) {
       const blur = parseFloat(m[3]);
       totalBlur += blur;

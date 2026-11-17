@@ -8,17 +8,27 @@
 // already has access to, plus the `modernColors` and any collected svgs.
 
 function looksLikeDotGrid(image) {
-  return /radial-gradient\(.*\)/i.test(image) && /repeat/i.test(image) && /(\d+px\s*\d+px)/.test(image);
+  // Two consecutive "<n>px" tokens, checked per token with single-quantifier
+  // anchored regexes instead of one multi-quantifier pattern (js/polynomial-redos).
+  const tokens = image.split(/\s+/);
+  const sizePair = tokens.some(
+    (t, i) => i > 0 && /^\d+px$/.test(t) && /^\d+px$/.test(tokens[i - 1]),
+  );
+  return /radial-gradient\([^)]*\)/i.test(image) && /repeat/i.test(image) && sizePair;
 }
 
 function looksLikeLineGrid(image) {
   // repeating-linear-gradient with a narrow colored band.
-  return /repeating-linear-gradient/i.test(image);
+  return image.toLowerCase().includes('repeating-linear-gradient');
 }
 
 function looksLikeNoise(image) {
   // data URI SVG with feTurbulence filter, or a well-known noise png path.
-  return /feTurbulence|data:image\/svg.+fractalNoise/i.test(image) || /noise\.(png|svg|webp)/i.test(image);
+  return (
+    /feTurbulence/i.test(image) ||
+    (image.includes('data:image/svg') && image.includes('fractalNoise')) ||
+    ['noise.png', 'noise.svg', 'noise.webp'].some(n => image.toLowerCase().includes(n))
+  );
 }
 
 function countRadialGradients(image) {

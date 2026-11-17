@@ -58,10 +58,6 @@ export function parseOklchOrOklab(raw) {
   const parts = body.split(/[\s,]+/).filter(Boolean);
   if (parts.length < 3) return null;
 
-  function parseNum(s, scale = 1) {
-    if (s.endsWith('%')) return parseFloat(s) / 100;
-    return parseFloat(s) * scale;
-  }
 
   const p0 = parts[0].endsWith('%') ? parseFloat(parts[0]) / 100 : parseFloat(parts[0]);
   const p1 = parseFloat(parts[1]);

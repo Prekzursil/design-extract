@@ -9,13 +9,6 @@ function pickMeta(metas, name) {
   return m ? m.content : null;
 }
 
-function jsonLdFromScripts(rawScripts = []) {
-  // rawScripts here may be just URLs. For JSON-LD we need inline script text,
-  // which the crawler doesn't currently capture. Accept an optional `inline`
-  // parameter from a richer payload where available.
-  return [];
-}
-
 export function extractSeo(rawData = {}) {
   const stack = rawData.light?.stack || {};
   const metas = stack.metas || [];

@@ -12,26 +12,30 @@ const FRAMEWORK_BY_GLOBAL = {
   'wp': 'wordpress',
 };
 
+// Literal substring needles (the script string is pre-lowercased): these
+// detectors grep script URLs for known stack signatures on purpose;
+// anchoring or regex evaluation would defeat the detection.
 const SCRIPT_PATTERNS = [
-  [/_next\/static/, 'next'],
-  [/\/nuxt\//, 'nuxt'],
-  [/\/astro\//, 'astro'],
-  [/\/sveltekit\//, 'sveltekit'],
-  [/shopify\./, 'shopify'],
-  [/wp-(content|includes)/, 'wordpress'],
-  [/webflow\.com/, 'webflow'],
-  [/framerusercontent/, 'framer'],
+  ['_next/static', 'next'],
+  ['/nuxt/', 'nuxt'],
+  ['/astro/', 'astro'],
+  ['/sveltekit/', 'sveltekit'],
+  ['shopify.', 'shopify'],
+  ['wp-content', 'wordpress'],
+  ['wp-includes', 'wordpress'],
+  ['webflow.com', 'webflow'],
+  ['framerusercontent', 'framer'],
 ];
 
 const ANALYTICS = {
-  gtag: /googletagmanager\.com|google-analytics/,
-  plausible: /plausible\.io/,
-  posthog: /posthog\.com/,
-  segment: /segment\.(io|com)/,
-  mixpanel: /mixpanel/,
-  amplitude: /amplitude/,
-  hotjar: /hotjar/,
-  vercelInsights: /\/_vercel\/insights/,
+  gtag: ['googletagmanager.com', 'google-analytics'],
+  plausible: ['plausible.io'],
+  posthog: ['posthog.com'],
+  segment: ['segment.io', 'segment.com'],
+  mixpanel: ['mixpanel'],
+  amplitude: ['amplitude'],
+  hotjar: ['hotjar'],
+  vercelInsights: ['/_vercel/insights'],
 };
 
 const TAILWIND_UTIL = /(^|\s)(flex|grid|block|inline|hidden|text-(xs|sm|base|lg|xl|\d+xl)|text-(gray|slate|zinc|red|blue|green|amber|neutral|stone)-\d+|bg-(gray|slate|zinc|red|blue|green|amber|neutral|stone)-\d+|p[xy]?-\d+|m[xy]?-\d+|gap-\d+|rounded(-\w+)?|shadow(-\w+)?|items-(start|center|end|baseline|stretch)|justify-(start|center|end|between|around|evenly)|grid-cols-\d+|col-span-\d+)(\s|$)/;
@@ -41,7 +45,8 @@ function detectFramework(signals) {
     if (FRAMEWORK_BY_GLOBAL[g]) return FRAMEWORK_BY_GLOBAL[g];
   }
   for (const s of signals.scripts || []) {
-    for (const [re, name] of SCRIPT_PATTERNS) if (re.test(s)) return name;
+    const lower = s.toLowerCase();
+    for (const [needle, name] of SCRIPT_PATTERNS) if (lower.includes(needle)) return name;
   }
   return 'unknown';
 }
@@ -65,8 +70,8 @@ function detectTailwind(signals) {
 
 function detectAnalytics(signals) {
   const found = [];
-  for (const [name, re] of Object.entries(ANALYTICS)) {
-    if ((signals.scripts || []).some(s => re.test(s))) found.push(name);
+  for (const [name, needles] of Object.entries(ANALYTICS)) {
+    if ((signals.scripts || []).some(s => needles.some(n => s.toLowerCase().includes(n)))) found.push(name);
   }
   return found;
 }

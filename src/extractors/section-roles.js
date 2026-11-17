@@ -39,11 +39,10 @@ function classifyRole(s, existingRole, pageType) {
   const text = (s.text || '').slice(0, 2000);
   const b = blob(s);
   const headings = s.headings || [];
-  const h1 = (headings[0] || '').toLowerCase();
 
   // Landmarks come first.
   if (s.tag === 'footer') return { role: 'footer', confidence: 0.95 };
-  if (s.tag === 'nav' || /^nav|header-nav|top-?bar/.test(b)) return { role: 'nav', confidence: 0.9 };
+  if (s.tag === 'nav' || b.startsWith('nav') || /header-nav|top-?bar/.test(b)) return { role: 'nav', confidence: 0.9 };
 
   // Strong class-based hints.
   if (/logo-?(wall|cloud|grid|strip)|trusted-?by/.test(b) || detectLogoWall(s)) {

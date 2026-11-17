@@ -35,9 +35,6 @@ export function extractAnimations(computedStyles, keyframes) {
       const delayMatch = el.animation.match(/(?<!\d)(\d+\.?\d*m?s)\s+(\d+\.?\d*m?s)/);
       if (delayMatch) durationSet.add(delayMatch[1]); // duration is first, delay is second
 
-      const iterMatch = el.animation.match(/\b(infinite|\d+)\b(?=\s+(normal|reverse|alternate)|\s+none|\s+running|\s+paused|$)/);
-      const fillMatch = el.animation.match(/\b(none|forwards|backwards|both)\b/);
-      // These are collected but don't need separate sets — they enrich keyframe data below
     }
   }
 

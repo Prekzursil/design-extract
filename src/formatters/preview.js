@@ -255,7 +255,6 @@ document.querySelectorAll('.swatch').forEach(el => {
 
 function swatch(hex, label, meta) {
   const rgb = hexToRgb(hex);
-  const textColor = isLight(rgb) ? '#000' : '#fff';
   return `<div class="swatch">
     <div class="swatch-color" style="background:${hex}"></div>
     <div class="swatch-info">
