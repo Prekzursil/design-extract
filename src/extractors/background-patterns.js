@@ -27,7 +27,7 @@ function looksLikeNoise(image) {
   return (
     /feTurbulence/i.test(image) ||
     (image.includes('data:image/svg') && image.includes('fractalNoise')) ||
-    /noise\.(png|svg|webp)/i.test(image)
+    ['noise.png', 'noise.svg', 'noise.webp'].some(n => image.toLowerCase().includes(n))
   );
 }
 
